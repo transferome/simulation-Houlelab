@@ -155,8 +155,8 @@ if __name__ == '__main__':
     chromo = '2L'
     mixed_haplotypes_file = 'dgrp' + chromo + '_mixed_haplotypes.txt'
     recombination_map = '2Lrcc.txt'
-    pos_range = ['1000000', '2000000']
-    simulation_number = 10
+    pos_range = ['2000000', '3000000']
+    simulation_number = 5
     chromosome_length = int(pos_range[1]) - int(pos_range[0])
     fb.prepare_simulations(mixed_haplotypes_file, chromo, pos_range[0], pos_range[1], chromosome_length,
                            recombination_map)
