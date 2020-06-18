@@ -5,21 +5,21 @@ import subprocess
 import glob
 import shutil
 import time
-sys.path.append('/home/ltjones/forql/chromosome2L/pysrc')
+sys.path.append('/home/ltjones/neutral_sim/pysrc')
 import forqs_begin as fb
 import common_functions as cfun
 
 
 def config_command(chr_arm, chr_length, recmap, n_size):
     """Create the command to run the config multiprocess"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/forqs_configs.py',
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_configs.py',
                '--chr', chr_arm, '--length', str(chr_length), '--recmap', recmap, '--size', str(n_size)]
     return command
 
 
 def forq_command():
     """Create the command to run the simulation multiprocess"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/forqs_parallel.py']
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_parallel.py']
     return command
 
 
@@ -40,20 +40,20 @@ def move_configs(chromosome_arm):
 
 def convert_pops2snps(chr_arm, lower_bound):
     """Converts all the population texts to snps in parallel"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/convert_forqs_pop.py', '--chr', chr_arm,
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/convert_forqs_pop.py', '--chr', chr_arm,
                '--low_bound', lower_bound]
     return command
 
 
 def index_tables(chr_arm):
     """Indexes all snp tables in parallel prior to running simreads"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/index_snp_table_parallel.py', '--chr', chr_arm]
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/index_snp_table_parallel.py', '--chr', chr_arm]
     return command
 
 
 def simreads_com():
     """Runs simreads in parallel for all config files"""
-    return ['python3', '/home/ltjones/forql/chromosome2L/pysrc/simreads_parallel.py']
+    return ['python3', '/home/ltjones/neutral_sim/pysrc/simreads_parallel.py']
 
 
 def simreads_cleanup(chromosome):
@@ -81,31 +81,31 @@ def simreads_cleanup(chromosome):
 
 def sam2bam(chr_arm):
     """Converts simulated sam files to bam files"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/samtools_view_parallel.py', '--chr', chr_arm]
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/samtools_view_parallel.py', '--chr', chr_arm]
     return command
 
 
 def bam_sort(chr_arm):
     """Sorts the simulated bam files"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/samtools_sort_parallel.py', '--chr', chr_arm]
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/samtools_sort_parallel.py', '--chr', chr_arm]
     return command
 
 
 def sambam_remove(chr_arm):
     """Removes the old sam, and unsorted bam"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/remove_sambam_parallel.py', '--chr', chr_arm]
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/remove_sambam_parallel.py', '--chr', chr_arm]
     return command
 
 
 def bam_index(chr_arm):
     """Indexes all the sorted bam files"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/samtools_index_parallel.py', '--chr', chr_arm]
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/samtools_index_parallel.py', '--chr', chr_arm]
     return command
 
 
 def harp_like(chr_arm):
     """Runs harp like in parallel"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/harp_like_parallel.py', '--chr', chr_arm]
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/harp_like_parallel.py', '--chr', chr_arm]
     return command
 
 
@@ -138,7 +138,7 @@ def harp_like_cleanup(chromosome):
 
 def harp_freq(chr_arm, step, width):
     """Runs harp freq in parallel"""
-    command = ['python3', '/home/ltjones/forql/chromosome2L/pysrc/harp_freq_parallel.py', '--chr', chr_arm,
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/harp_freq_parallel.py', '--chr', chr_arm,
                '--step', step, '--width', width]
     return command
 
@@ -152,15 +152,18 @@ def remove_hlk(chr_arm):
 
 if __name__ == '__main__':
     start_time = time.time()
+    # Set initial parameters and filenames
     chromo = '2L'
     mixed_haplotypes_file = 'dgrp' + chromo + '_mixed_haplotypes.txt'
-    recombination_map = '2Lrcc.txt'
     pos_range = ['2000000', '3000000']
+    recombination_map = chromo + 'rcc.txt'
+    recombination_map_subset = 'dmel_recRates_' + chromo + '_' + pos_range[0] + '-' + pos_range[1] + '.csv'
     simulation_number = 5
     chromosome_length = int(pos_range[1]) - int(pos_range[0])
-    fb.prepare_simulations(mixed_haplotypes_file, chromo, pos_range[0], pos_range[1], chromosome_length,
+
+    # prepare the recombination map and haplotype files for forqs simulation
+    fb.prepare_simulations(mixed_haplotypes_file, chromo, pos_range[0], pos_range[1],
                            recombination_map)
-    recombination_map_subset = 'dmel_recRates_' + chromo + '_' + pos_range[0] + '-' + pos_range[1] + '.csv'
     com = config_command(chromo, chromosome_length, recombination_map_subset, simulation_number)
     p1 = subprocess.call(com, shell=False)
     com2 = forq_command()

@@ -25,7 +25,7 @@ def subset_rcc(rcc_list, chr_arm, chromosome_range):
     return out_list
 
 
-def get_midpoint(data, chromosome_length):
+def get_midpoint(data, lower_bound):
     """Get midpoint value for each row"""
     out_list = list()
     for line in data[1:]:
@@ -33,7 +33,7 @@ def get_midpoint(data, chromosome_length):
         p1 = int(line.split('\t')[0].split('..')[0].split(':')[-1])
         mid_point = (p1 + p2)//2
         # TODO: is subtracting chromosome length from mid-point really what I want to fix range problem
-        mid_point = mid_point - chromosome_length
+        mid_point = mid_point - int(lower_bound)
         out_list.append(str(mid_point))
     return out_list
 
@@ -69,11 +69,11 @@ def write_recmap(pos, mid, cum, chr_arm, chromosome_range):
             f.write(line)
 
 
-def main_recmap(filename, chr_arm, chromosome_range, chromosome_length):
+def main_recmap(filename, chr_arm, chromosome_range):
     """Main functions combines previously defined functions into one function"""
     rcc_file = read_rcc(filename)
     dat = subset_rcc(rcc_file, chr_arm, chromosome_range)
-    positions = get_midpoint(dat, chromosome_length)
+    positions = get_midpoint(dat, chromosome_range[0])
     mid_rate = get_midpoint_rate(dat)
     cum_rate = get_cumulative_rate(mid_rate)
     write_recmap(positions, mid_rate, cum_rate, chr_arm, chromosome_range)

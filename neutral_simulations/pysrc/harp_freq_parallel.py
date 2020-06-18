@@ -6,7 +6,7 @@ import argparse
 import sys
 import os
 import shutil
-sys.path.append('/home/ltjones/forql/chromosome2L/pysrc')
+sys.path.append('/home/ltjones/neutral_sim/pysrc')
 import common_functions as cfun
 
 

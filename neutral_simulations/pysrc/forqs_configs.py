@@ -5,7 +5,7 @@ import random
 from multiprocessing import Pool
 from functools import partial
 import argparse
-sys.path.append('/home/ltjones/forql/chromosome2L/pysrc')
+sys.path.append('/home/ltjones/neutral_sim/pysrc')
 import common_functions as cfun
 
 
@@ -44,13 +44,13 @@ def forqs_config(chromosome, chromosome_length, recomb_map_file, dummy_var):
     chrom_length_string = '\tchromosome_lengths = ' + chromosome_length + '\n'
     recomb_map_string = '\tfilename = ' + recomb_map_file + '\n'
     config_file = ['Trajectory_Constant popsize_0\n', '    value = 53\n', '\n', 'Trajectory_Constant popsize_1\n',
-                    '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 30\n', '\n',
-                    'Trajectory_Constant popsize_3\n', '    value = 200\n', '\n',
-                    'Trajectory_GenerationComposite popsize\n', '    generation:trajectory = 0 popsize_0\n',
-                    '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 16 popsize_2\n',
-                    '    generation:trajectory = 29 popsize_3\n', '\n',
+                   '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 30\n', '\n',
+                   'Trajectory_Constant popsize_3\n', '    value = 200\n', '\n',
+                   'Trajectory_GenerationComposite popsize\n', '    generation:trajectory = 0 popsize_0\n',
+                   '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 16 popsize_2\n',
+                   '    generation:trajectory = 29 popsize_3\n', '\n',
                    'PopulationConfigGenerator_LinearSteppingStone pcg\n',
-                    chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 30\n',
+                   chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 30\n',
                    '    id_offset_step = 0\n', '    population_count = 1\n', '    population_size = popsize\n', '\n',
                    'RecombinationPositionGenerator_RecombinationMap rpg_map\n', recomb_map_string, '\n',
                    'Reporter_Population reporter_population\n', '\n', 'SimulatorConfig\n', output_dir_string,

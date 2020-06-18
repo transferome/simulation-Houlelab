@@ -4,7 +4,7 @@ from multiprocessing import Pool
 from functools import partial
 import argparse
 import sys
-sys.path.append('/home/ltjones/forql/chromosome2L/pysrc')
+sys.path.append('/home/ltjones/neutral_sim/pysrc')
 import common_functions as cfun
 
 

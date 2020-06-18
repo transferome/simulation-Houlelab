@@ -1,9 +1,8 @@
 """Commands to Prepare Forqs Simulations"""
 import numpy as np
 import sys
-sys.path.append('/home/ltjones/forql/chromosome2L/pysrc')
+sys.path.append('/home/ltjones/neutral_sim/pysrc')
 import convert_recmap as cnrec
-# import argparse
 
 
 def organize_data(file, chromosome, region_min, region_max):
@@ -53,31 +52,18 @@ def data_matrix(chromosome, transpose_filename):
             f.write(line)
 
 
-# def create_recomb_map(recombination_file, chromosome_range):
-#     """Create recombination file based off how long chromosome will be"""
-#     stem_name = recombination_file.split('rcc.txt')[0]
-#     newfilename = stem_name + '_' + str(chromosome_range[0]) + '-' + str(chromosome_range[1]) + '.csv'
-#     with open(recombination_file) as f, open(newfilename, 'w+') as f1:
-#         for line in f:
-#             if line.startswith('position'):
-#                 f1.write(line)
-#             else:
-#                 if int(chromosome_range[0]) <= int(line.split(' ')[0]) <= int(chromosome_range[1]):
-#                     f1.write(line)
-
-
 def change_mix_name(mixed_haplotype_file):
     """Creates transpose filename"""
     new_filename = mixed_haplotype_file.split('_haplotypes')[0] + '_transpose.txt'
     return new_filename
 
 
-def prepare_simulations(mixed_file, chr_arm, low_bound, high_bound, chromosome_length, recmap_file):
+def prepare_simulations(mixed_file, chr_arm, low_bound, high_bound, recmap_file):
     """Main function for forqs begin"""
     transpose_name = change_mix_name(mixed_file)
     organize_data(mixed_file, chr_arm, int(low_bound), int(high_bound))
     data_matrix(chr_arm, transpose_name)
-    cnrec.main_recmap(recmap_file, chr_arm, [low_bound, high_bound], chromosome_length)
+    cnrec.main_recmap(recmap_file, chr_arm, [low_bound, high_bound])
 
 
 if __name__ == '__main__':
