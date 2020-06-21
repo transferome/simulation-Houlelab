@@ -153,9 +153,9 @@ def remove_hlk(chr_arm):
 if __name__ == '__main__':
     start_time = time.time()
     # Set initial parameters and filenames
-    chromo = '2L'
+    chromo = '2R'
     mixed_haplotypes_file = 'dgrp' + chromo + '_mixed_haplotypes.txt'
-    pos_range = ['2000000', '3000000']
+    pos_range = ['4000000', '5000000']
     recombination_map = chromo + 'rcc.txt'
     recombination_map_subset = 'dmel_recRates_' + chromo + '_' + pos_range[0] + '-' + pos_range[1] + '.csv'
     simulation_number = 5
@@ -184,12 +184,12 @@ if __name__ == '__main__':
     p8 = subprocess.call(com8, shell=False)
     com9 = bam_index(chromo)
     p9 = subprocess.call(com9, shell=False)
-    com10 = harp_like(chromo)
-    p10 = subprocess.call(com10, shell=False)
-    harp_like_cleanup(chromo)
-    com11 = harp_freq(chromo, '50000', '100000')
-    p11 = subprocess.call(com11, shell=False)
-    com12 = harp_freq(chromo, '50000', '50000')
-    p12 = subprocess.call(com12, shell=False)
-    remove_hlk(chromo)
+    # com10 = harp_like(chromo)
+    # p10 = subprocess.call(com10, shell=False)
+    # harp_like_cleanup(chromo)
+    # com11 = harp_freq(chromo, '50000', '100000')
+    # p11 = subprocess.call(com11, shell=False)
+    # com12 = harp_freq(chromo, '50000', '50000')
+    # p12 = subprocess.call(com12, shell=False)
+    # remove_hlk(chromo)
     print("--- %s seconds ---" % (time.time() - start_time))

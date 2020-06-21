@@ -69,7 +69,18 @@ def parse_individual(popstring, position_index_list):
     indi = popstring.split(' ')
     tup_list = [make_tuple(s) for s in indi]
     positions = [tup[0] for tup in tup_list]
-    dgrp_num = [tup[1] for tup in tup_list]
+    if len(positions) > 1:
+        minimum_pos = position_index_list[0][1]
+        # if position o f recombination break, is before the first SNP position, that recombination doesn't matter
+        if positions[1] < minimum_pos:
+            dgrp_num = [tup[1] for tup in tup_list][1:]
+            del positions[1]
+        else:
+            dgrp_num = [tup[1] for tup in tup_list]
+    else:
+        dgrp_num = [tup[1] for tup in tup_list]
+    # print(positions)
+    # print(dgrp_num)
     if len(dgrp_num) > 1:
         positions_trim = positions[1:] + [positions[-1]]
         hap_guide = list(zip(dgrp_num, positions, positions_trim))
@@ -229,7 +240,7 @@ def write_simread_config(configfilename, frequencies, forqs_stem, chromosome):
     filename_stem = 'filename_stem simreads_' + forqs_stem
     range_file = 'dgrp' + chromosome + '_rangesubset.txt'
     min_max = cfun.region_min_max(range_file)
-    region = 'region 2L:' + str(min_max[0]) + '-' + str(min_max[1])
+    region = 'region ' + chromosome + ':' + str(min_max[0]) + '-' + str(min_max[1])
     haplotype_frequencies = 'haplotype_frequencies ' + string_freqs
     recombined_haplotypes = 'recombined haplotype frequencies'
     coverage = 'coverage 200'
