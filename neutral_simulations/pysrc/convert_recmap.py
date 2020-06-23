@@ -16,7 +16,7 @@ def read_rcc(filename):
 def subset_rcc(rcc_list, chr_arm, chromosome_range):
     """Subset the rcc text list"""
     out_list = list()
-    newfile = chr_arm + '_' + str(chromosome_range[0]) + '-' + str(chromosome_range[1]) + '.csv'
+    newfile = '{}_{}-{}.csv'.format(chr_arm, chromosome_range[0], chromosome_range[1])
     with open(newfile, 'w+') as f:
         for line in rcc_list[1:]:
             if int(chromosome_range[0]) <= int(line.split('\t')[0].split('..')[0].split(':')[-1]) < int(chromosome_range[1]):
@@ -57,7 +57,7 @@ def get_cumulative_rate(mid_rate_list):
 
 def write_recmap(pos, mid, cum, chr_arm, chromosome_range):
     """Writes information to new file"""
-    newfilename = 'dmel_recRates_' + chr_arm + '_' + str(chromosome_range[0]) + '-' + str(chromosome_range[1]) + '.csv'
+    newfilename = 'dmel_recRates_{}_{}-{}.csv'.format(chr_arm, chromosome_range[0], chromosome_range[1])
     header = "position COMBINED_rate(cM / Mb) Genetic_Map(cM)\n"
     mid_str = [str(x) for x in mid]
     cum_str = [str(x) for x in cum]

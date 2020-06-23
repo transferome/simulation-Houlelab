@@ -154,11 +154,11 @@ if __name__ == '__main__':
     start_time = time.time()
     # Set initial parameters and filenames
     chromo = '2R'
-    mixed_haplotypes_file = 'dgrp' + chromo + '_mixed_haplotypes.txt'
-    pos_range = ['4000000', '5000000']
-    recombination_map = chromo + 'rcc.txt'
-    recombination_map_subset = 'dmel_recRates_' + chromo + '_' + pos_range[0] + '-' + pos_range[1] + '.csv'
-    simulation_number = 5
+    mixed_haplotypes_file = 'dgrp{}_mixed_haplotypes.txt'.format(chromo)
+    pos_range = ['8000000', '10000000']
+    recombination_map = '{}rcc.txt'.format(chromo)
+    recombination_map_subset = 'dmel_recRates_{}_{}-{}.csv'.format(chromo, pos_range[0], pos_range[1])
+    simulation_number = 10
     chromosome_length = int(pos_range[1]) - int(pos_range[0])
 
     # prepare the recombination map and haplotype files for forqs simulation
@@ -171,19 +171,19 @@ if __name__ == '__main__':
     move_configs(chromo)
     com3 = convert_pops2snps(chromo, pos_range[0])
     p3 = subprocess.call(com3, shell=False)
-    com4 = index_tables(chromo)
-    p4 = subprocess.call(com4, shell=False)
-    com5 = simreads_com()
-    p5 = subprocess.call(com5, shell=False)
-    simreads_cleanup(chromo)
-    com6 = sam2bam(chromo)
-    p6 = subprocess.call(com6, shell=False)
-    com7 = bam_sort(chromo)
-    p7 = subprocess.call(com7, shell=False)
-    com8 = sambam_remove(chromo)
-    p8 = subprocess.call(com8, shell=False)
-    com9 = bam_index(chromo)
-    p9 = subprocess.call(com9, shell=False)
+    # com4 = index_tables(chromo)
+    # p4 = subprocess.call(com4, shell=False)
+    # com5 = simreads_com()
+    # p5 = subprocess.call(com5, shell=False)
+    # simreads_cleanup(chromo)
+    # com6 = sam2bam(chromo)
+    # p6 = subprocess.call(com6, shell=False)
+    # com7 = bam_sort(chromo)
+    # p7 = subprocess.call(com7, shell=False)
+    # com8 = sambam_remove(chromo)
+    # p8 = subprocess.call(com8, shell=False)
+    # com9 = bam_index(chromo)
+    # p9 = subprocess.call(com9, shell=False)
     # com10 = harp_like(chromo)
     # p10 = subprocess.call(com10, shell=False)
     # harp_like_cleanup(chromo)

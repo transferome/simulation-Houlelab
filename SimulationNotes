@@ -3,3 +3,13 @@
 
 2L 4000000-8000000, 5 simulations took:
 773.9401044845581 seconds
+
+
+2R 8000000 - 10000000, 100 simulations took:
+2814.214811 seconds
+
+2R 8000000 - 10000000, 10 simulations on simplify branch:
+18.397238
+
+2R 8000000 - 10000000, 10 simulations on original branch:
+19.415594

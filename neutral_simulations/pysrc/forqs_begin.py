@@ -7,19 +7,18 @@ import convert_recmap as cnrec
 
 def organize_data(file, chromosome, region_min, region_max):
     """Takes the mimhap file and removes a few columns that get in the way"""
-    data_filename = 'dgrp' + chromosome + '_subset.txt'
-    newdata_filename = 'dgrp' + chromosome + '_rangesubset.txt'
+    data_filename = 'dgrp{}_subset.txt'.format(chromosome)
+    newdata_filename = 'dgrp{}_rangesubset.txt'.format(chromosome)
     data = list()
     new_data = list()
     with open(file) as f:
-        for line in f:
-            pos = line.split('\t')[1]
-            if region_min <= int(pos) <= region_max:
-                # pos = line.split('\t')[1]
-                data.append(line)
-                hap_info = line.split('\t')[4:]
-                hap_info.insert(0, pos)
-                new_data.append(hap_info)
+        filt_obj = filter(lambda x: int(region_min) <= int(x.split('\t')[1]) <= int(region_max), f)
+        for line in filt_obj:
+            data.append(line)
+            linesp = line.split('\t')
+            hap_info = linesp[4:]
+            hap_info.insert(0, linesp[1])
+            new_data.append(hap_info)
     with open(newdata_filename, 'w+') as f:
         for line in new_data:
             line = '\t'.join(line)
@@ -34,7 +33,7 @@ def data_matrix(chromosome, transpose_filename):
     """Takes the few column removed mimhap file, turns into matrix and transposes it.
     This makes it so that each row is a DGRP# and its haplotype sequence.  Writes it as a file"""
     # TODO: 107 is based off having 106 DGRP regionsubset_file
-    subset_filename = 'dgrp' + chromosome + '_rangesubset.txt'
+    subset_filename = 'dgrp{}_rangesubset.txt'.format(chromosome)
     subset_data = list()
     with open(subset_filename) as f:
         for line in f:
@@ -68,3 +67,4 @@ def prepare_simulations(mixed_file, chr_arm, low_bound, high_bound, recmap_file)
 
 if __name__ == '__main__':
     pass
+
