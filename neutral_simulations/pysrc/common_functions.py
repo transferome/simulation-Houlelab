@@ -2,6 +2,7 @@
 import psutil
 import os
 import glob
+import shutil
 
 
 def region_min_max(snp_txt):
@@ -74,7 +75,39 @@ def list_freqs(chromosome):
 def limit_cpu():
     """Called At Every Process Started in a multiprcoess pool"""
     p = psutil.Process(os.getpid())
-    p.nice(15)
+    p.nice(6)
+
+
+def config_command(chr_arm, chr_length, recmap, n_size, configtype='Reg'):
+    """Create the command to run the config multiprocess"""
+    basic_command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_configs.py', '--configtype', 'config_type_holder',
+               '--chr', chr_arm, '--length', str(chr_length), '--recmap', recmap, '--size', str(n_size)]
+    if configtype == 'Reg':
+        basic_command[3] = 'Reg'
+    if configtype == 'HAPS':
+        basic_command[3] = 'HAPS'
+    return basic_command
+
+
+def forq_command():
+    """Create the command to run the simulation multiprocess"""
+    command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_parallel.py']
+    return command
+
+
+def move_configs(chromosome_arm):
+    """Move all of the config files created for forqs, into the forqs directory the config file created"""
+    forqs_dirs_sorted = list_forqs_directories(chromosome_arm)
+    configs = glob.glob('*.config')
+    configs_sorted = sorted(configs, key=lambda x: int(x.split('.')[0].split('_')[1]))
+    if len(configs_sorted) == len(forqs_dirs_sorted):
+        for config_file, forqs_dir in zip(configs_sorted, forqs_dirs_sorted):
+            if config_file.split('.')[0].split('_')[1] == forqs_dir.split('/')[-2].split('_')[1]:
+                shutil.move(config_file, forqs_dir)
+            else:
+                print('Forqs ID Numbers Dont Match')
+    else:
+        print('Different Number of Config Files and forqs Directories')
 
 
 if __name__ == '__main__':
