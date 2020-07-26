@@ -27,7 +27,7 @@ def forqs_sim(forqs_config):
 if __name__ == '__main__':
     # execute parallel processing of forqs simulations
     config_list = list_forq_configs()
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     simulations = pool.map(forqs_sim, config_list)
     pool.close()
     pool.join()

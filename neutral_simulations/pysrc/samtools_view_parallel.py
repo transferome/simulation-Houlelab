@@ -18,7 +18,7 @@ def samtools_view(sam_file):
 def samtools_view_multi(chromosome, target_func):
     """runs samtools view in parallel"""
     sams = cfun.list_sams(chromosome)
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     pool.map(target_func, sams)
     pool.close()
     pool.join()

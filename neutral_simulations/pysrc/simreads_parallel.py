@@ -22,7 +22,7 @@ def simreads(configfile):
 def simreads_multi(target_func):
     """Multiprocess of the simreads commands"""
     configs = list_config_files()
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     pool.map(target_func, configs)
     pool.close()
     pool.join()

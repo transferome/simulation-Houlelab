@@ -14,7 +14,7 @@ def freq_process(chromosome, step, width, hlk_file):
     """Executes harps freq command"""
     range_text = 'dgrp' + chromosome + '_rangesubset.txt'
     min_max = cfun.region_min_max(range_text)
-    region = chromosome + ':' + str(min_max[0]) + '-' + str(min_max[1])
+    region = '{}:{}-{}'.format(chromosome, str(min_max[0]), str(min_max[1]))
     harp_freq_command = ['harp', 'freq', '--hlk', hlk_file, '--region', region, '--window_step', step,
                          '--window_width', width]
     subprocess.check_call(harp_freq_command, shell=False)
@@ -23,7 +23,7 @@ def freq_process(chromosome, step, width, hlk_file):
 def freq_multi(chromosome, step, width, target_func):
     """runs harp freq in parallel multiprocess"""
     hlks = cfun.list_hlk(chromosome)
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     adjusted_func = partial(target_func, chromosome, step, width)
     pool.map(adjusted_func, hlks)
     pool.close()
@@ -34,15 +34,14 @@ def renamer(chromosome, step, width):
     """Renames files created from harp freq"""
     freqs = cfun.list_freqs(chromosome)
     for file in freqs:
-        name_start = file.split('.freqs')[0]
-        new_name = name_start + '_step' + step + '_width' + width + '.freqs'
+        new_name = '{}_step{}_width{}.freqs'.format(file.split('.freqs')[0], step, width)
         os.rename(file, new_name)
 
 
 def mover(chromosome, width):
     """Moves all of the freq files into a folder"""
     current_dir = os.getcwd()
-    new_dir = current_dir + '/freqs_' + chromosome + '_' + width + 'w'
+    new_dir = '{}/freqs_{}_{}w'.format(current_dir, chromosome, width)
     if not os.path.exists(new_dir):
         os.mkdir(new_dir)
     freqs = cfun.list_freqs(chromosome)

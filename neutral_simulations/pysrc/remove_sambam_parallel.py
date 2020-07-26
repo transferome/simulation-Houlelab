@@ -18,7 +18,7 @@ def remove_sambam(chromosome, target_func):
     bams = cfun.list_bams(chromosome)
     bams_old = [s for s in bams if not s.endswith('_sorted.bam')]
     remove_files = sams + bams_old
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     pool.map(target_func, remove_files)
     pool.close()
     pool.join()

@@ -24,7 +24,7 @@ def index_snp_texts(snp_text):
 def index_snp_multi(chromosome, target_func):
     """Index multiple SNP files at same time """
     stems = list_snp_files(chromosome)
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     pool.map(target_func, stems)
     pool.close()
     pool.join()

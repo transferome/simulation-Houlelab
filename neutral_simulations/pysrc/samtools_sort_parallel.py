@@ -18,7 +18,7 @@ def samtools_sort(bamfile):
 def samtools_sort_multi(chromosome, target_func):
     """runs samtools view in parallel"""
     bams = cfun.list_bams(chromosome)
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     pool.map(target_func, bams)
     pool.close()
     pool.join()
