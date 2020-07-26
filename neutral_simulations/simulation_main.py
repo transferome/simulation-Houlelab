@@ -10,34 +10,6 @@ import forqs_begin as fb
 import common_functions as cfun
 
 
-def config_command(chr_arm, chr_length, recmap, n_size):
-    """Create the command to run the config multiprocess"""
-    command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_configs.py',
-               '--chr', chr_arm, '--length', str(chr_length), '--recmap', recmap, '--size', str(n_size)]
-    return command
-
-
-def forq_command():
-    """Create the command to run the simulation multiprocess"""
-    command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_parallel.py']
-    return command
-
-
-def move_configs(chromosome_arm):
-    """Move all of the config files created for forqs, into the forqs directory the config file created"""
-    forqs_dirs_sorted = cfun.list_forqs_directories(chromosome_arm)
-    configs = glob.glob('*.config')
-    configs_sorted = sorted(configs, key=lambda x: int(x.split('.')[0].split('_')[1]))
-    if len(configs_sorted) == len(forqs_dirs_sorted):
-        for config_file, forqs_dir in zip(configs_sorted, forqs_dirs_sorted):
-            if config_file.split('.')[0].split('_')[1] == forqs_dir.split('/')[-2].split('_')[1]:
-                shutil.move(config_file, forqs_dir)
-            else:
-                print('Forqs ID Numbers Dont Match')
-    else:
-        print('Different Number of Config Files and forqs Directories')
-
-
 def convert_pops2snps(chr_arm, lower_bound):
     """Converts all the population texts to snps in parallel"""
     command = ['python3', '/home/ltjones/neutral_sim/pysrc/convert_forqs_pop.py', '--chr', chr_arm,
@@ -164,11 +136,11 @@ if __name__ == '__main__':
     # prepare the recombination map and haplotype files for forqs simulation
     fb.prepare_simulations(mixed_haplotypes_file, chromo, pos_range[0], pos_range[1],
                            recombination_map)
-    com = config_command(chromo, chromosome_length, recombination_map_subset, simulation_number)
+    com = cfun.config_command(chromo, chromosome_length, recombination_map_subset, simulation_number)
     p1 = subprocess.call(com, shell=False)
-    com2 = forq_command()
+    com2 = cfun.forq_command()
     p2 = subprocess.call(com2, shell=False)
-    move_configs(chromo)
+    cfun.move_configs(chromo)
     com3 = convert_pops2snps(chromo, pos_range[0])
     p3 = subprocess.call(com3, shell=False)
     # com4 = index_tables(chromo)

@@ -29,6 +29,3 @@ if __name__ == '__main__':
     com2 = cfun.forq_command()
     p2 = subprocess.call(com2, shell=False)
     cfun.move_configs(chromo)
-
-    with open('haplotype_frequencies_chr1_final_pop1.txt') as f:
-        data = [line for line in f]
