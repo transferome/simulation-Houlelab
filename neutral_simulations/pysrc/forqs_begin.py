@@ -12,7 +12,7 @@ def organize_data(file, chromosome, region_min, region_max):
     data = list()
     new_data = list()
     with open(file) as f:
-        filt_obj = filter(lambda x: int(region_min) <= int(x.split('\t')[1]) <= int(region_max), f)
+        filt_obj = list(filter(lambda x: int(region_min) <= int(x.split('\t')[1]) <= int(region_max), f))
         for line in filt_obj:
             data.append(line)
             linesp = line.split('\t')

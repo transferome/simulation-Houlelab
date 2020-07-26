@@ -13,24 +13,25 @@ import common_functions as cfun
 
 def position_index(chromosome, lower_bound):
     """Gets list of positions, and indexes them with enumerate"""
-    range_file = 'dgrp' + chromosome + '_rangesubset.txt'
-    pos_list = list()
+    range_file = 'dgrp{}_rangesubset.txt'.format(chromosome)
+    # pos_list = list()
     # subtractor is used to adjust the SNP positions from simulations that don't start at 0
     # for example 1,000,000 to 2,000,000 range has first SNP as 1005816
     # but in the forqs population file, 1,005,816 does not exist, from the start of the simulated chromosome
     # that actually exists at 5816 in forqs positions, so have to subtract 1,000,000
     subtractor = int(lower_bound)
     with open(range_file) as f:
-        for line in f:
-            pos = int(line.split('\t')[0]) - subtractor
-            pos_list.append(pos)
+        pos_list = [int(line.split('\t')[0]) - subtractor for line in f]
+        # for line in f:
+        #     pos = int(line.split('\t')[0]) - subtractor
+        #     pos_list.append(pos)
     return list(enumerate(pos_list))
 
 
 def hap_dictionary(chromosome):
     """Takes the transposed dataframe and creates a dictionary, where key is DGRP# and value
     is the haplotype sequence"""
-    transpose_filename = 'dgrp' + chromosome + '_mixed_transpose.txt'
+    transpose_filename = 'dgrp{}_mixed_transpose.txt'.format(chromosome)
     data = [line.rstrip('\n') for line in open(transpose_filename)][1:]
     # TODO: for some reason forqs changed haplotype id's from 0 - 105, so all DGRP numbers need 1 number subtracted
     data_dict = {str(line.split('\t')[0]): ''.join(line.split('\t')[1:]) for line in data}
@@ -118,23 +119,16 @@ def construct_haplotype(individual, hap_dict):
     if len(individual) > 1:
         chunk_list = list()
         for region in individual:
-            try:
-                haplotype = hap_dict[region[0]]
-                # have to add one here and in the other similar code chunk, because splice not inclusive
-                chunk = haplotype[region[1]:region[2] + 1]
-                chunk_list.append(chunk)
-            except KeyError:
-                print('DGRP or Region Key error')
+            haplotype = hap_dict[region[0]]
+            chunk = haplotype[region[1]:region[2] + 1]
+            chunk_list.append(chunk)
         return ''.join(chunk_list)
     if len(individual) == 1:
         for region in individual:
-            try:
-                haplotype = hap_dict[region[0]]
-                chunk = haplotype[region[1]:region[2] + 1]
-            except KeyError:
-                print('DGRP or Region Key Error')
+            haplotype = hap_dict[region[0]]
+            chunk = haplotype[region[1]:region[2] + 1]
         return chunk
-    if len(individual) is None:
+    if len(individual) == 0:
         print('Error, Individual is of Length None')
         quit()
 
@@ -155,8 +149,7 @@ def make_index(haplotype_list):
     """Returns an Index List, so that haplotypes are paired maternal and paternal"""
     index_list = list()
     for x in range(0, len(haplotype_list)//2):
-        rep_num = [x] * 2
-        index_list.extend(rep_num)
+        index_list.extend([x] * 2)
     index_list = [str(x) for x in index_list]
     return index_list
 
@@ -236,35 +229,33 @@ def write_simread_config(configfilename, frequencies, forqs_stem, chromosome):
     str_freqs_list = [str(x) for x in frequencies]
     string_freqs = ' '.join(str_freqs_list)
     filename_refseq = 'filename_refseq /home/dhoule/evoreseq/ref/dmel-majchr-norm-r6.24.fasta'
-    filename_snps = 'filename_snps ' + snp_file
-    filename_stem = 'filename_stem simreads_' + forqs_stem
-    range_file = 'dgrp' + chromosome + '_rangesubset.txt'
+    filename_snps = 'filename_snps {}'.format(snp_file)
+    filename_stem = 'filename_stem simreads_{}'.format(forqs_stem)
+    range_file = 'dgrp{}_rangesubset.txt'.format(chromosome)
     min_max = cfun.region_min_max(range_file)
-    region = 'region ' + chromosome + ':' + str(min_max[0]) + '-' + str(min_max[1])
-    haplotype_frequencies = 'haplotype_frequencies ' + string_freqs
+    region = 'region {}:{}-{}'.format(chromosome, str(min_max[0]), str(min_max[1]))
+    haplotype_frequencies = 'haplotype_frequencies {}'.format(string_freqs)
     recombined_haplotypes = 'recombined haplotype frequencies'
     coverage = 'coverage 200'
     error_rate = 'error_rate 0.2'
     read_length = 'read_length 150'
-    file_start = ['#', '#Usage:harp sim_reads', '#', '']
-    file_addition = [filename_refseq, filename_snps, filename_stem, region, haplotype_frequencies,
-                     recombined_haplotypes, coverage, error_rate, read_length]
-    out_list = file_start + file_addition
+    file_lines = ['#', '#Usage:harp sim_reads', '#', '', filename_refseq, filename_snps, filename_stem, region,
+                  haplotype_frequencies, recombined_haplotypes, coverage, error_rate, read_length]
     with open(configfilename, 'w+') as f:
-        for line in out_list:
+        for line in file_lines:
             f.write(line + '\n')
 
 
 def pop2_snp(chromosome, lower_bound, forqs_stem):
     """Main Function Which Using Code From Previously Defined Functions and Converts the file, and creates
     config file"""
-    ref_file = 'dgrp' + chromosome + '_subset.txt'
+    ref_file = 'dgrp{}_subset.txt'.format(chromosome)
     # chr_len = chromosome_length
     pos_id_list = position_index(chromosome, lower_bound)
     hap_dic = hap_dictionary(chromosome)
-    pop_filename = forqs_stem + '/population_final_pop1.txt'
-    output_snptable = forqs_stem + '_haplotypes.txt'
-    simreads_config_filename = 'simreads_' + forqs_stem + '.config'
+    pop_filename = '{}/population_final_pop1.txt'.format(forqs_stem)
+    output_snptable = '{}_haplotypes.txt'.format(forqs_stem)
+    simreads_config_filename = 'simreads_{}.config'.format(forqs_stem)
     forqs_pop = read_popfile(pop_filename)
     population_haplotypes = construct_individuals(forqs_pop, pos_id_list, hap_dic, forqs_stem)
     indxes = make_index(population_haplotypes)
@@ -280,7 +271,7 @@ def pop2_snp(chromosome, lower_bound, forqs_stem):
 def multi_conversion(chromosome, lower_bound, target_func):
     """Convert population txt files to snp tables and create simreads config in parallel"""
     stems = cfun.list_stems(chromosome)
-    pool = Pool(18, cfun.limit_cpu)
+    pool = Pool(21, cfun.limit_cpu)
     target = partial(target_func, chromosome, lower_bound)
     pool.map(target, stems)
     pool.close()

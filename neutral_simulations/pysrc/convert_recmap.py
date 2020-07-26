@@ -29,9 +29,7 @@ def get_midpoint(data, lower_bound):
     """Get midpoint value for each row"""
     out_list = list()
     for line in data[1:]:
-        p2 = int(line.split('\t')[0].split('..')[-1])
-        p1 = int(line.split('\t')[0].split('..')[0].split(':')[-1])
-        mid_point = (p1 + p2)//2
+        mid_point = (int(line.split('\t')[0].split('..')[-1]) + int(line.split('\t')[0].split('..')[0].split(':')[-1]))//2
         # TODO: is subtracting chromosome length from mid-point really what I want to fix range problem
         mid_point = mid_point - int(lower_bound)
         out_list.append(str(mid_point))
