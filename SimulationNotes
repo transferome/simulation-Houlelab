@@ -4,12 +4,25 @@
 2L 4000000-8000000, 5 simulations took:
 773.9401044845581 seconds
 
+3R 21000000 - 25000000, 1000 simulations on simplify2 branch took
+64602.01514148712 seconds ~ 18.3 hrs
 
-2R 8000000 - 10000000, 100 simulations took:
-2814.214811 seconds
+# With differences in frequencies of haplotypes in forqs ---> simreads ---> harp
 
-2R 8000000 - 10000000, 10 simulations on simplify branch:
-18.397238
-
-2R 8000000 - 10000000, 10 simulations on original branch:
-19.415594
+There is a way with forqs, to output what I think is the frequency of the provided
+DGRP haplotypes forqs used to start the simulation, at the end of the simulation in 100kb windows.
+File will look like...
+pos freq1   freq2   freq3....freqn (n being the number of DGRP haplotypes)
+--I gave forqs ambiguous haplotypes names, 1 - 106, because the actual DGRP numbers aren't needed
+--during the simreads simulations, this is because I'm giving simreads 200 diploid individuals to simulate
+--reads from, which are a mosaic of DGRP haplotypes, so DGRP frequency is not provided to simreads, only the
+--frequency of those made up individuals, which all have the same frequency because a fly can only be sampled once during
+--the collection of flies for DNA pool-seq.  Simreads creates a true.freqs output file, and an actual.freqs output file.
+--I believe what that is doing is showing the difference between the starting frequency values I gave, and the
+--frequency value within the simulated reads (so I think those files could be used to determine how much noise simreads
+--is adding into the read pool.  Going back to forqs, those frequency outputs of DGRP haplotypes at the end of the simulation,
+--can be compared to the HARP frequency estimates which are run on the simulated reads.  If the output of harp, always
+--aligns with the end of forqs, simreads is pointless.  I believe the order of the DGRP number frequencies in the
+--forqs outputs will be the order of the mixed_haplotypes.txt columns (I need to get the header of this file though).  Not sure
+--the order of harp frequency outputs, but I have a script that adds the DGRP info to those HARP outputs becuase I made those
+--HARP frequency plots
