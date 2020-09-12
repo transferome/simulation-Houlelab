@@ -80,8 +80,9 @@ def limit_cpu():
 
 def config_command(chr_arm, chr_length, recmap, n_size, configtype='Reg'):
     """Create the command to run the config multiprocess"""
-    basic_command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_configs.py', '--configtype', 'config_type_holder',
-               '--chr', chr_arm, '--length', str(chr_length), '--recmap', recmap, '--size', str(n_size)]
+    basic_command = ['python3', '/home/ltjones/neutral_sim/pysrc/forqs_configs.py', '--configtype',
+                     'config_type_holder', '--chr', chr_arm, '--length', str(chr_length), '--recmap',
+                     recmap, '--size', str(n_size)]
     if configtype == 'Reg':
         basic_command[3] = 'Reg'
     if configtype == 'HAPS':

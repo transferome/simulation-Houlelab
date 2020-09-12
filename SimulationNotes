@@ -26,3 +26,17 @@ pos freq1   freq2   freq3....freqn (n being the number of DGRP haplotypes)
 --forqs outputs will be the order of the mixed_haplotypes.txt columns (I need to get the header of this file though).  Not sure
 --the order of harp frequency outputs, but I have a script that adds the DGRP info to those HARP outputs becuase I made those
 --HARP frequency plots
+
+**** Comparing frequencies
+- Turns out the snp_pool.txt files I was giving harp had an extra DGRP line that the mixed_haplotypes.txt files used
+for forqs did not have
+- I adjusted the snp_pool.txt files so that the extra line is removed, these are named snp_poolv2.txt
+- Currently the vector of frequencies in the forqs final frequencies is 1 less than the harp final frequencies, which is an issue
+however, this creates an opportunity of seeing how harp handles haplotypes which should not exist in the read pool
+- To get around the unequal vector lengths, I can add a 0.00 value, to the position where the extra line 'line_508' is
+
+
+
+**** Comparing overlapping windows, and using the 10k windows from forqs
+VCF files are 0 position based, but the reference is 1 position based
+So when I find a SNP in the mixed_haplotypes.txt file (comes from vcf), which is 4000034.  I have to

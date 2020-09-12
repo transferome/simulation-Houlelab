@@ -25,10 +25,10 @@ def forqs_frequency_outputs(chromosome):
 if __name__ == '__main__':
     chromo = '2L'
     mixed_haplotypes_file = 'dgrp{}_mixed_haplotypes.txt'.format(chromo)
-    pos_range = ['4000000', '8000000']
+    pos_range = ['4000033', '8000000']
     recombination_map = '{}rcc.txt'.format(chromo)
     recombination_map_subset = 'dmel_recRates_{}_{}-{}.csv'.format(chromo, pos_range[0], pos_range[1])
-    simulation_number = 1000
+    simulation_number = 10
     chromosome_length = int(pos_range[1]) - int(pos_range[0])
 
     # prepare the recombination map and haplotype files for forqs simulation
@@ -58,8 +58,10 @@ if __name__ == '__main__':
     com10 = cfun.harp_like(chromo)
     p10 = subprocess.call(com10, shell=False)
     cfun.harp_like_cleanup(chromo)
-    com11 = cfun.harp_freq(chromo, '50000', '100000')
+    com11 = cfun.harp_freq(chromo, '25000', '50000')
     p11 = subprocess.call(com11, shell=False)
     com12 = cfun.harp_freq(chromo, '50000', '50000')
     p12 = subprocess.call(com12, shell=False)
     cfun.remove_hlk(chromo)
+
+

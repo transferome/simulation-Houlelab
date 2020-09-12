@@ -28,14 +28,25 @@ def forqs_config(chromosome, chromosome_length, recomb_map_file, sim_number):
     output_dir_string = '\toutput_directory = {}\n'.format(stem)
     chrom_length_string = '\tchromosome_lengths = {}\n'.format(chromosome_length)
     recomb_map_string = '\tfilename = {}\n'.format(recomb_map_file)
+    # config_file = ['Trajectory_Constant popsize_0\n', '    value = 53\n', '\n', 'Trajectory_Constant popsize_1\n',
+    #                '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 30\n', '\n',
+    #                'Trajectory_Constant popsize_3\n', '    value = 200\n', '\n',
+    #                'Trajectory_GenerationComposite popsize\n', '    generation:trajectory = 0 popsize_0\n',
+    #                '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 10 popsize_2\n',
+    #                '    generation:trajectory = 25 popsize_3\n', '\n',
+    #                'PopulationConfigGenerator_LinearSteppingStone pcg\n',
+    #                chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 30\n',
+    #                '    id_offset_step = 0\n', '    population_count = 1\n', '    population_size = popsize\n', '\n',
+    #                'RecombinationPositionGenerator_RecombinationMap rpg_map\n', recomb_map_string, '\n',
+    #                'Reporter_Population reporter_population\n', '\n', 'SimulatorConfig\n', output_dir_string,
+    #                '    population_config_generator = pcg\n', '    recombination_position_generator = rpg_map\n',
+    #                '    reporter = reporter_population\n']
     config_file = ['Trajectory_Constant popsize_0\n', '    value = 53\n', '\n', 'Trajectory_Constant popsize_1\n',
-                   '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 30\n', '\n',
-                   'Trajectory_Constant popsize_3\n', '    value = 200\n', '\n',
+                   '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 200\n', '\n',
                    'Trajectory_GenerationComposite popsize\n', '    generation:trajectory = 0 popsize_0\n',
-                   '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 10 popsize_2\n',
-                   '    generation:trajectory = 25 popsize_3\n', '\n',
+                   '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 100 popsize_2\n', '\n',
                    'PopulationConfigGenerator_LinearSteppingStone pcg\n',
-                   chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 30\n',
+                   chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 100\n',
                    '    id_offset_step = 0\n', '    population_count = 1\n', '    population_size = popsize\n', '\n',
                    'RecombinationPositionGenerator_RecombinationMap rpg_map\n', recomb_map_string, '\n',
                    'Reporter_Population reporter_population\n', '\n', 'SimulatorConfig\n', output_dir_string,
@@ -53,19 +64,36 @@ def forqs_config_freqs(chromosome, chromosome_length, recomb_map_file, sim_numbe
     output_dir_string = '\toutput_directory = {}\n'.format(stem)
     chrom_length_string = '\tchromosome_lengths = {}\n'.format(chromosome_length)
     recomb_map_string = '\tfilename = {}\n'.format(recomb_map_file)
+    # config_file = ['Trajectory_Constant popsize_0\n', '    value = 53\n', '\n', 'Trajectory_Constant popsize_1\n',
+    #                '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 200\n', '\n',
+    #                'Trajectory_GenerationComposite popsize\n', '    generation:trajectory = 0 popsize_0\n',
+    #                '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 10 popsize_2\n', '\n',
+    #                'PopulationConfigGenerator_LinearSteppingStone pcg\n',
+    #                chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 11\n',
+    #                '    id_offset_step = 0\n', '    population_count = 1\n', '    population_size = popsize\n', '\n',
+    #                'RecombinationPositionGenerator_RecombinationMap rpg_map\n', recomb_map_string, '\n',
+    #                'Reporter_Population reporter_population\n', '\n',
+    #                'HaplotypeGrouping_Uniform hg\n', 'ids_per_group = 1\n', '\n',
+    #                'Reporter_HaplotypeFrequencies reporter_haplotype_frequencies\n',
+    #                'haplotype_grouping = hg\n', 'chromosome_step = 1e5\n', '\n'
+    #                'SimulatorConfig\n', output_dir_string,
+    #                '    population_config_generator = pcg\n', '    recombination_position_generator = rpg_map\n',
+    #                '    reporter = reporter_population\n', 'reporter = reporter_haplotype_frequencies\n']
     config_file = ['Trajectory_Constant popsize_0\n', '    value = 53\n', '\n', 'Trajectory_Constant popsize_1\n',
-                   '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 200\n', '\n',
+                   '    value = 2000\n', '\n', 'Trajectory_Constant popsize_2\n', '    value = 15\n', '\n'
+                   'Trajectory_Constant popsize_3\n', '    value = 200\n', '\n',
                    'Trajectory_GenerationComposite popsize\n', '    generation:trajectory = 0 popsize_0\n',
-                   '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 10 popsize_2\n', '\n',
+                   '    generation:trajectory = 1 popsize_1\n', '    generation:trajectory = 3 popsize_2\n',
+                   '    generation:trajectory = 18 popsize_3\n', '\n',
                    'PopulationConfigGenerator_LinearSteppingStone pcg\n',
-                   chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 11\n',
+                   chrom_length_string, '    chromosome_pair_count = 1\n', '    generation_count = 19\n',
                    '    id_offset_step = 0\n', '    population_count = 1\n', '    population_size = popsize\n', '\n',
                    'RecombinationPositionGenerator_RecombinationMap rpg_map\n', recomb_map_string, '\n',
                    'Reporter_Population reporter_population\n', '\n',
                    'HaplotypeGrouping_Uniform hg\n', 'ids_per_group = 1\n', '\n',
                    'Reporter_HaplotypeFrequencies reporter_haplotype_frequencies\n',
-                   'haplotype_grouping = hg\n', 'chromosome_step = 1e5\n', '\n'
-                   'SimulatorConfig\n', output_dir_string,
+                   'haplotype_grouping = hg\n', 'chromosome_step = 10000\n', '\n'
+                                                                           'SimulatorConfig\n', output_dir_string,
                    '    population_config_generator = pcg\n', '    recombination_position_generator = rpg_map\n',
                    '    reporter = reporter_population\n', 'reporter = reporter_haplotype_frequencies\n']
     config_filename = '{}.config'.format(stem)
