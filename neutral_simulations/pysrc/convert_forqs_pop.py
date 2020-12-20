@@ -47,90 +47,101 @@ def read_popfile(popfilename):
         if s.startswith('+ '):
             new_string = s.lstrip('+ { ')
             final_string = new_string.rstrip(' }')
-            new_list.append(final_string)
+            indi = final_string.split(' ')
+            chunks = [make_tuple(s) for s in indi]
+            new_list.append(chunks)
         if s.startswith('- '):
             new_string = s.lstrip('- { ')
             final_string = new_string.rstrip(' }')
-            new_list.append(final_string)
+            indi = final_string.split(' ')
+            chunks = [make_tuple(s) for s in indi]
+            new_list.append(chunks)
     return new_list
 
 
 def index_getter(start_position, end_position, position_index_list):
     """Given an upper and lower bound for a position, this finds the index value of the maximum index value
     which pasts the equality testing"""
-    index_min = [tup[0] for tup in position_index_list if tup[1] > start_position]
+    index_min = [tup[0] for tup in position_index_list if tup[1] >= start_position]
     index_max = [tup[0] for tup in position_index_list if tup[1] <= end_position]
     ind_min = min(index_min)
     ind_max = max(index_max)
-    return str(ind_min), str(ind_max)
+    return ind_min, ind_max
 
 
-def parse_individual(popstring, position_index_list):
-    """For an individual creates list of tuples, that include the position start and stop, and dgrp number"""
-    indi = popstring.split(' ')
-    tup_list = [make_tuple(s) for s in indi]
-    positions = [tup[0] for tup in tup_list]
-    if len(positions) > 1:
-        minimum_pos = position_index_list[0][1]
-        # if position o f recombination break, is before the first SNP position, that recombination doesn't matter
-        if positions[1] < minimum_pos:
-            dgrp_num = [tup[1] for tup in tup_list][1:]
-            del positions[1]
-        else:
-            dgrp_num = [tup[1] for tup in tup_list]
-    else:
-        dgrp_num = [tup[1] for tup in tup_list]
-    # print(positions)
-    # print(dgrp_num)
-    if len(dgrp_num) > 1:
-        positions_trim = positions[1:] + [positions[-1]]
-        hap_guide = list(zip(dgrp_num, positions, positions_trim))
-        out_list = list()
-        for region in hap_guide[:-1]:
+class ForqsHaplotype:
+    """Forqs Haplotype Object
+    Example [(0, 91), (1235052, 105), (1251805, 105)]
+    or  [(0, 91)]
+    """
+
+    def __init__(self, forq_haplotype):
+        """Forqs Haplotype Instance Creation"""
+        self.info = forq_haplotype
+
+        # tag object depending on it's structure
+        self.length = len(self.info)
+        self.founders = [info[1] for info in self.info]
+        self.founders_set = list(set(self.founders))
+        self.founder_number = len(self.founders_set)
+        self.positions = [info[0] for info in self.info]
+        self.struct = 'normal'
+        if self.length == 1:
+            self.struct = 'single'
+        if self.length != self.founder_number:
+            self.struct = 'contain duplicate'
+        if self.length == 2 and self.founder_number == 1:
+            self.struct = 'single recombined'
+        self.position_map_offset = None
+        self.temp_map = None
+        self.map = list()
+
+    def make_haplotype_map(self, position_index_list):
+        """Create the haplotype guide for assembling the recombined forqs haplotype outputs"""
+        position_indexes = [info[0] for info in position_index_list]
+        position_values = [info[1] for info in position_index_list]
+        min_index = min(position_indexes)
+        max_index = max(position_indexes)
+        if self.struct == 'single' or self.struct == 'single recombined':
+            self.map.append([self.founders_set[0], min_index, max_index])
+        if self.struct == 'normal' or self.struct == 'contain duplicate':
+            if self.positions[1] < min(position_values):
+                self.founders.pop(0)
+                self.positions.pop(1)
             try:
-                minval, maxval = index_getter(region[1], region[2], position_index_list)
-                new_tuple = (str(region[0]), int(minval), int(maxval))
-                out_list.append(new_tuple)
-            except ValueError:
-                print('Value Error: Something wrong with ')
-        max_possible_index_list = [tup[0] for tup in position_index_list]
-        max_possible = max(max_possible_index_list)
-        last_region = hap_guide[-1]
-        fminval, fmaxval = index_getter(last_region[1], last_region[2], position_index_list)
-        # Add 1 so there is not overlap with the previous region.
-        ftuple = (str(last_region[0]), int(fminval), max_possible)
-        out_list.append(ftuple)
-        return out_list
-    elif len(dgrp_num) == 1:
-        out_list = list()
-        max_possible_index_list = [tup[0] for tup in position_index_list]
-        max_possible = max(max_possible_index_list)
-        ftuple = (str(dgrp_num[0]), 0, max_possible)
-        out_list.append(ftuple)
-        return out_list
-    else:
-        print('Individual is of length less than 1')
+                if self.positions[2] < min(position_values):
+                    sys.exit("Two recombination points before the first SNP occurs")
+            except IndexError:
+                pass
+            self.position_map_offset = self.positions[1:] + [max(position_values)]
+            self.temp_map = list(zip(self.positions, self.position_map_offset))
+            for hap in self.temp_map:
+                min_id, max_id = index_getter(hap[0], hap[1], position_index_list)
+                self.map.append([min_id, max_id])
+            for i, hap_map in enumerate(self.map):
+                if i < len(self.map) - 1:
+                    current_end = hap_map[1]
+                    next_start = self.map[i + 1][0]
+                    # print(current_end, next_start)
+                    if current_end == next_start:
+                        self.map[i + 1][0] = int(next_start) + 1
+            for line_id, hap_map in zip(self.founders, self.map):
+                hap_map.insert(0, line_id)
 
 
-def construct_haplotype(individual, hap_dict):
+def construct_haplotype(forq_haplotype_object, hap_dict):
     """Given the output from parse_individual, and the haplotype_dictionary, this creates
     an individuals haplotype"""
-    chunk = None
-    if len(individual) > 1:
-        chunk_list = list()
-        for region in individual:
-            haplotype = hap_dict[region[0]]
-            chunk = haplotype[region[1]:region[2] + 1]
-            chunk_list.append(chunk)
-        return ''.join(chunk_list)
-    if len(individual) == 1:
-        for region in individual:
-            haplotype = hap_dict[region[0]]
-            chunk = haplotype[region[1]:region[2] + 1]
-        return chunk
-    if len(individual) == 0:
-        print('Error, Individual is of Length None')
-        quit()
+    if forq_haplotype_object.struct == 'single' or forq_haplotype_object.struct == 'single recombined':
+        haplotype = hap_dict[str(forq_haplotype_object.founders_set[0])]
+        sequence_chunk = haplotype[forq_haplotype_object.map[0][1]:forq_haplotype_object.map[0][2] + 1]
+        return sequence_chunk
+    if forq_haplotype_object.struct == 'normal' or forq_haplotype_object.struct == 'contain duplicate':
+        sequence_list = list()
+        for sub_map in forq_haplotype_object.map:
+            haplotype = hap_dict[str(sub_map[0])]
+            sequence_list.append(haplotype[sub_map[1]:sub_map[2] + 1])
+        return ''.join(sequence_list)
 
 
 def construct_individuals(poplist, position_index_list, hap_dict, forqs_stem):
@@ -139,13 +150,29 @@ def construct_individuals(poplist, position_index_list, hap_dict, forqs_stem):
     stem = forqs_stem
     out_list = list()
     for line in poplist:
-        individual = parse_individual(line, position_index_list)
-        haplotype = construct_haplotype(individual, hap_dict)
-        out_list.append(haplotype)
+        individual = ForqsHaplotype(line)
+        individual.make_haplotype_map(position_index_list)
+        out_list.append(construct_haplotype(individual, hap_dict))
     return out_list
 
 
-def make_index(haplotype_list):
+def restructure_individuals(haplotypes):
+    """Reorganizes so that haplotypes are columns instead of rows"""
+    out_list = list()
+    new_structure = list()
+    for hap in haplotypes:
+        new_hap = list(hap)
+        new_structure.append(new_hap)
+    hap_array = np.array(new_structure)
+    hap_trans = hap_array.transpose()
+    new_hap_list = hap_trans.tolist()
+    for lst in new_hap_list:
+        new_line = ','.join(lst)
+        out_list.append(new_line)
+    return out_list
+
+
+def make_index_pair(haplotype_list):
     """Returns an Index List, so that haplotypes are paired maternal and paternal"""
     index_list = list()
     for x in range(0, len(haplotype_list)//2):
@@ -173,35 +200,19 @@ def haplotype_count_dict(random_haps):
     return all_freq
 
 
-def haplotype_freq_list(hap_cnt_dict, sample_number):
+def haplotype_freq_list(hap_cnt_dict):
     """Gets frequency of each of the diploid individuals in the random sample.
     This will make the frequency list that simreads needs, this is the frequency of these in the pool, so haps not
     sampled do not get a freq of 0, because they were never poooled"""
     freq_dict = dict()
     for key in hap_cnt_dict.keys():
         count = hap_cnt_dict[key]
-        freq = str(round(count / sample_number, 5))
+        freq = str(round(count / 200, 5))
         freq_dict[key] = freq
     freqs = list(freq_dict.values())
     freq_divide = [float(s) / 2 for s in freqs]
     final_freqs = list(itertools.chain.from_iterable(itertools.repeat(x, 2) for x in freq_divide))
     return final_freqs
-
-
-def restructure_individuals(haplotypes):
-    """Reorganizes so that haplotypes are columns instead of rows"""
-    out_list = list()
-    new_structure = list()
-    for hap in haplotypes:
-        new_hap = list(hap)
-        new_structure.append(new_hap)
-    hap_array = np.array(new_structure)
-    hap_trans = hap_array.transpose()
-    new_hap_list = hap_trans.tolist()
-    for lst in new_hap_list:
-        new_line = ','.join(lst)
-        out_list.append(new_line)
-    return out_list
 
 
 def write_snp_table(hapfile, newfilename, final_haplotypes, chromosome):
@@ -224,26 +235,46 @@ def write_simread_config(configfilename, frequencies, forqs_stem, chromosome):
     """Writes out the information for the simreads config file"""
     # TODO: not entirely sure how to match chromosome length and chromosome region.  Giving simreads region 0 - 1000000
     #  gives error
-    snp_file = os.path.abspath(forqs_stem + '_haplotypes.txt')
+    snp_file = os.path.abspath('{}_haplotypes.txt'.format(forqs_stem))
     # chromosome_l = int(chromosome_length) + 4000
     str_freqs_list = [str(x) for x in frequencies]
     string_freqs = ' '.join(str_freqs_list)
-    filename_refseq = 'filename_refseq /home/dhoule/evoreseq/ref/dmel-majchr-norm-r6.24.fasta'
-    filename_snps = 'filename_snps {}'.format(snp_file)
-    filename_stem = 'filename_stem simreads_{}'.format(forqs_stem)
     range_file = 'dgrp{}_rangesubset.txt'.format(chromosome)
     min_max = cfun.region_min_max(range_file)
-    region = 'region {}:{}-{}'.format(chromosome, str(min_max[0]), str(min_max[1]))
-    haplotype_frequencies = 'haplotype_frequencies {}'.format(string_freqs)
-    recombined_haplotypes = 'recombined haplotype frequencies'
-    coverage = 'coverage 200'
-    error_rate = 'error_rate 0.2'
-    read_length = 'read_length 150'
-    file_lines = ['#', '#Usage:harp sim_reads', '#', '', filename_refseq, filename_snps, filename_stem, region,
-                  haplotype_frequencies, recombined_haplotypes, coverage, error_rate, read_length]
+    file_lines = ['#', '#Usage:harp sim_reads', '#', '',
+                  'filename_refseq /home/dhoule/evoreseq/ref/dmel-majchr-norm-r6.24.fasta',
+                  'filename_snps {}'.format(snp_file), 'filename_stem simreads_{}'.format(forqs_stem),
+                  'region {}:{}-{}'.format(chromosome, str(min_max[0]), str(min_max[1])),
+                  'haplotype_frequencies {}'.format(string_freqs), 'recombined haplotype frequencies',
+                  'coverage 200', 'error_rate 0.2', 'read_length 150']
     with open(configfilename, 'w+') as f:
         for line in file_lines:
-            f.write(line + '\n')
+            f.write('{}\n'.format(line))
+
+# def write_simread_config(configfilename, frequencies, forqs_stem, chromosome):
+#     """Writes out the information for the simreads config file"""
+#     # TODO: not entirely sure how to match chromosome length and chromosome region.  Giving simreads region 0 - 1000000
+#     #  gives error
+#     snp_file = os.path.abspath(forqs_stem + '_haplotypes.txt')
+#     # chromosome_l = int(chromosome_length) + 4000
+#     str_freqs_list = [str(x) for x in frequencies]
+#     string_freqs = ' '.join(str_freqs_list)
+#     filename_refseq = 'filename_refseq /home/dhoule/evoreseq/ref/dmel-majchr-norm-r6.24.fasta'
+#     filename_snps = 'filename_snps {}'.format(snp_file)
+#     filename_stem = 'filename_stem simreads_{}'.format(forqs_stem)
+#     range_file = 'dgrp{}_rangesubset.txt'.format(chromosome)
+#     min_max = cfun.region_min_max(range_file)
+#     region = 'region {}:{}-{}'.format(chromosome, str(min_max[0]), str(min_max[1]))
+#     haplotype_frequencies = 'haplotype_frequencies {}'.format(string_freqs)
+#     recombined_haplotypes = 'recombined haplotype frequencies'
+#     coverage = 'coverage 200'
+#     error_rate = 'error_rate 0.2'
+#     read_length = 'read_length 150'
+#     file_lines = ['#', '#Usage:harp sim_reads', '#', '', filename_refseq, filename_snps, filename_stem, region,
+#                   haplotype_frequencies, recombined_haplotypes, coverage, error_rate, read_length]
+#     with open(configfilename, 'w+') as f:
+#         for line in file_lines:
+#             f.write('{}\n'.format(line))
 
 
 def pop2_snp(chromosome, lower_bound, forqs_stem):
@@ -258,11 +289,11 @@ def pop2_snp(chromosome, lower_bound, forqs_stem):
     simreads_config_filename = 'simreads_{}.config'.format(forqs_stem)
     forqs_pop = read_popfile(pop_filename)
     population_haplotypes = construct_individuals(forqs_pop, pos_id_list, hap_dic, forqs_stem)
-    indxes = make_index(population_haplotypes)
+    indxes = make_index_pair(population_haplotypes)
     rands = random_haplotypes(indxes)
     cnt_dict = haplotype_count_dict(rands)
     # currently setting sample size to 200
-    freqies = haplotype_freq_list(cnt_dict, 200)
+    freqies = haplotype_freq_list(cnt_dict)
     final_haps = restructure_individuals(population_haplotypes)
     write_snp_table(ref_file, output_snptable, final_haps, chromosome)
     write_simread_config(simreads_config_filename, freqies, forqs_stem, chromosome)

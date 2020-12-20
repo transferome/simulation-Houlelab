@@ -10,7 +10,7 @@ import common_functions as cfun
 
 def list_snp_files(chromosome):
     """Lists all the snp files in """
-    return glob.glob('chr' + chromosome + '_*haplotypes.txt')
+    return glob.glob('chr{}_*haplotypes.txt'.format(chromosome))
 
 
 def index_snp_texts(snp_text):

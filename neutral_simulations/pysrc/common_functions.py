@@ -15,8 +15,7 @@ def region_min_max(snp_txt):
 
 def list_forqs_directories(chromosome):
     """List all the directories created by forqs"""
-    current_dir = os.getcwd()
-    dirs = glob.glob(current_dir + '/*/')
+    dirs = glob.glob('{}/*/'.format(os.getcwd()))
     forqs_dirs = [s for s in dirs if 'chr' + chromosome in s]
     forqs_dirs = [s for s in forqs_dirs if '.output' not in s]
     forqs_dirs_sorted = sorted(forqs_dirs, key=lambda x: int(x.split('/')[-2].split('_')[1]))
@@ -34,42 +33,42 @@ def list_stems(chromosome):
 
 def list_bams(chromosome):
     """Lists all the bam files in the folder"""
-    return glob.glob('simreads_chr' + chromosome + '*.bam')
+    return glob.glob('simreads_chr{}*.bam'.format(chromosome))
 
 
 def list_sams(chromosome):
     """Lists all the sam files in the folder"""
-    return glob.glob('simreads_chr' + chromosome + '*.sam')
+    return glob.glob('simreads_chr{}*.sam'.format(chromosome))
 
 
 def list_sorted_bams(chromosome):
     """Lists all sorted bam files"""
-    return glob.glob('simreads_chr' + chromosome + '*_sorted.bam')
+    return glob.glob('simreads_chr{}*_sorted.bam'.format(chromosome))
 
 
 def list_sorted_bams_idx(chromosome):
     """Lists all sorted bam bai files"""
-    return glob.glob('simreads_chr' + chromosome + '*_sorted.bam.bai')
+    return glob.glob('simreads_chr{}*_sorted.bam.bai'.format(chromosome))
 
 
 def list_forqs_haplotypes(chromosome):
     """Lists all forqs haplotypes txt files"""
-    return glob.glob('chr' + chromosome + '*_haplotypes.txt')
+    return glob.glob('chr{}*_haplotypes.txt'.format(chromosome))
 
 
 def list_forqs_idx(chromosome):
     """Lists all forqs haplotypes txt.idx files"""
-    return glob.glob('chr' + chromosome + '*_haplotypes.txt.idx')
+    return glob.glob('chr{}*_haplotypes.txt.idx'.format(chromosome))
 
 
 def list_hlk(chromosome):
     """Lists all hlk files in folder"""
-    return glob.glob('chr' + chromosome + '_*.hlk')
+    return glob.glob('chr{}_*.hlk'.format(chromosome))
 
 
 def list_freqs(chromosome):
     """Lists all freq files created from harp freq"""
-    return glob.glob('chr' + chromosome + '_*.freqs')
+    return glob.glob('chr{}_*.freqs'.format(chromosome))
 
 
 def limit_cpu():

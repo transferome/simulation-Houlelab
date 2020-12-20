@@ -7,6 +7,7 @@ true/actual freqs cannot be done in broken up windows"""
 import os
 import sys
 import subprocess
+
 sys.path.append('/home/ltjones/neutral_sim/pysrc')
 import forqs_begin as fb
 import common_functions as cfun
@@ -63,5 +64,3 @@ if __name__ == '__main__':
     com12 = cfun.harp_freq(chromo, '50000', '50000')
     p12 = subprocess.call(com12, shell=False)
     cfun.remove_hlk(chromo)
-
-

@@ -53,7 +53,7 @@ def data_matrix(chromosome, transpose_filename):
 
 def change_mix_name(mixed_haplotype_file):
     """Creates transpose filename"""
-    new_filename = mixed_haplotype_file.split('_haplotypes')[0] + '_transpose.txt'
+    new_filename = '{}_transpose.txt'.format(mixed_haplotype_file.split('_haplotypes')[0])
     return new_filename
 
 
@@ -67,4 +67,3 @@ def prepare_simulations(mixed_file, chr_arm, low_bound, high_bound, recmap_file)
 
 if __name__ == '__main__':
     pass
-

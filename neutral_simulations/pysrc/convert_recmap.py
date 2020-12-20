@@ -63,7 +63,7 @@ def write_recmap(pos, mid, cum, chr_arm, chromosome_range):
         f.write(header)
         f.write("50000 0 0\n")
         for p, m, c in zip(pos, mid_str, cum_str):
-            line = ' '.join([p, m, c]) + '\n'
+            line = '{}\n'.format(' '.join([p, m, c]))
             f.write(line)
 
 

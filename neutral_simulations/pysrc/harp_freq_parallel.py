@@ -12,7 +12,7 @@ import common_functions as cfun
 
 def freq_process(chromosome, step, width, hlk_file):
     """Executes harps freq command"""
-    range_text = 'dgrp' + chromosome + '_rangesubset.txt'
+    range_text = 'dgrp{}_rangesubset.txt'.format(chromosome)
     min_max = cfun.region_min_max(range_text)
     region = '{}:{}-{}'.format(chromosome, str(min_max[0]), str(min_max[1]))
     harp_freq_command = ['harp', 'freq', '--hlk', hlk_file, '--region', region, '--window_step', step,
